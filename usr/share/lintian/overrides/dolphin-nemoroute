@@ -1,0 +1,2 @@
+dolphin: package-name-doesnt-match-sonames libdolphinprivate5 libkdeinit5-dolphin
+dolphin: shlib-without-versioned-soname usr/lib/*/libkdeinit5_dolphin.so libkdeinit5_dolphin.so

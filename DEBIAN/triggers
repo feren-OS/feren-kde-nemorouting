@@ -1,0 +1,5 @@
+# Triggers added by dh_makeshlibs/11.1.4ubuntu1
+activate-noawait ldconfig
+
+interest /usr/bin/dolphin
+interest /usr/share/applications/nemo.desktop

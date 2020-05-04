@@ -1,0 +1,53 @@
+#!/bin/bash
+
+for var in "$@"; do
+	if [ "$var" = "-h" ] || [ "$var" = "--help" ] || [ "$var" = "--help-all" ] || [ "$var" = "--help-gtk" ] || [ "$var" = "-c" ] || [ "$var" = "--check" ] || [ "$var" = "--version" ] || [ "$var" = "-g" ] || [[ "$var" = "--geometry="* ]] || [ "$var" = "-n" ] || [ "$var" = "--no-default-window" ] || [ "$var" = "--no-desktop" ] || [ "$var" = "--fix-cache" ] || [ "$var" = "-q" ] || [ "$var" = "--quit" ] || [[ "$var" = "--display="* ]]; then
+		if [ -z "$currentargs" ]; then
+			currentargs="$var"
+		else
+			currentargs="$currentargs $var"
+		fi
+	else
+		if [ -z "$filepath" ]; then
+			filepath="$var"
+		else
+			filepath="$filepath $var"
+		fi
+	fi
+done
+
+while read -r line; do
+	export $line
+done < <(tail -n +8 ~/.config/user-dirs.dirs)
+
+if [ "$filepath" = "remote:/" ] || [ "$filepath" = "remote://" ]; then
+	newinputs="$filepath"
+	newinputs=$(echo "$newinputs" | sed 's/remote/network/g')
+	nemo $currentargs $newinputs
+elif [[ "$filepath" = *"timeline:/"* ]]; then
+	newinputs="$filepath"
+	newinputs=$(echo "$newinputs" | sed "s%$1%recent:/%g")
+	nemo $currentargs $newinputs
+elif [[ "$filepath" = *"search:/documents" ]]; then
+	newinputs="$filepath"
+	newinputs=$(echo "$newinputs" | sed "s%$1%$(eval echo $XDG_DOCUMENTS_DIR)%g")
+	nemo $currentargs $newinputs
+elif [[ "$filepath" = *"search:/images" ]]; then
+	newinputs="$filepath"
+	newinputs=$(echo "$newinputs" | sed "s%$1%$(eval echo $XDG_PICTURES_DIR)%g")
+	nemo $currentargs $newinputs
+elif [[ "$filepath" = *"search:/audio" ]]; then
+	newinputs="$filepath"
+	newinputs=$(echo "$newinputs" | sed "s%$1%$(eval echo $XDG_MUSIC_DIR)%g")
+	nemo $currentargs "$newinputs"
+elif [[ "$filepath" = *"search:/videos" ]]; then
+	newinputs="$filepath"
+	newinputs=$(echo "$newinputs" | sed "s%$1%$(eval echo $XDG_VIDEOS_DIR)%g")
+	nemo $currentargs "$newinputs"
+elif [[ "$filepath" = *"desktop:/"* ]]; then
+	newinputs="$filepath"
+	newinputs=$(echo "$newinputs" | sed "s%$1%$(eval echo $XDG_DESKTOP_DIR)%g")
+	nemo $currentargs $newinputs
+else
+	nemo $currentargs "$filepath"
+fi

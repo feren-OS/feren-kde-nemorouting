@@ -1,0 +1,27 @@
+#!/bin/bash
+
+#if ! grep -q "NoDisplay=" '/usr/share/applications/nemo.desktop'; then
+#	sed -i 's%Actions=%NoDisplay=false\nActions=%g' '/usr/share/applications/nemo.desktop'
+#fi
+#if ! grep -q "Hidden=" '/usr/share/applications/nemo.desktop'; then
+#	sed -i 's%Actions=%Hidden=false\nActions=%g' '/usr/share/applications/nemo.desktop'
+#fi
+
+if [ ! -f "/var/lib/dpkg/info/dolphin.list" ] || [ ! -f "/usr/share/applications/org.kde.dolphin.desktop" ]; then
+  #No Dolphin
+  rm -f /usr/bin/dolphin
+  cp -R /usr/bin/dolphin-nemoroute /usr/bin/dolphin
+  rm -f /usr/share/applications/org.kde.dolphin.desktop
+  sed -i 's/Icon=folder/Icon=system-file-manager/g' /usr/share/applications/org.kde.dolphin-nemoroute.desktop
+  cp -R /usr/share/applications/org.kde.dolphin-nemoroute.desktop /usr/share/applications/org.kde.dolphin.desktop
+  rm -f /usr/share/lintian/overrides/dolphin
+  cp -R /usr/share/lintian/overrides/dolphin-nemoroute /usr/share/lintian/overrides/dolphin
+  cp -R /usr/share/kservices5-nemoroute/* /usr/share/kservices5/
+  chmod +x /usr/bin/dolphin
+  chmod +x /usr/share/applications/org.kde.dolphin.desktop
+  sed -i 's/Hidden=true/Hidden=false/g' /usr/share/applications/org.kde.dolphin.desktop
+  sed -i 's/NoDisplay=false/NoDisplay=true/g' /usr/share/applications/org.kde.dolphin.desktop
+fi
+sed -i 's/Icon=folder/Icon=system-file-manager/g' /usr/share/applications/nemo.desktop
+sed -i 's/Icon=folder/Icon=system-file-manager/g' /usr/share/applications/csd-automount.desktop
+update-desktop-database
